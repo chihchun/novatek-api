@@ -99,10 +99,6 @@ class Novatek:
   def set_timestamp(self, stamp):
     flag = '1' if stamp else '0'
     return self._get(2008, [('par', flag)])
-  
-  # FIXME: this is not ping.
-  def ping(self):
-    return self._get(2016)
 
   # Get movie recording time. The unit is second.
   def get_recording_sec(self):
@@ -150,7 +146,7 @@ class Novatek:
   def reset_config(self):
     x = self._get_xml(3011)
   
-  def cmd_3012(self):
+  def firmware_version(self):
     # Version number? 'HT10 20160310 V1.0'
     x = self._get_xml(3012)
     return x.find('./String').text
@@ -168,7 +164,14 @@ class Novatek:
     for file in x.findall('.//File'):
       paths.append(file.find('./FPATH').text)
     return paths
-    
+
+  # This command is for smartphone to check NT9666x if exist. 
+  # If it is alive would return result, otherwise it would not return.
+  # Command: http://192.168.1.254/?custom=1&cmd=3016
+  # Parameter: Null
+  def ping(self):
+    return int(self._get_xml(3016).find('./Status').text)
+
   # 3017? -> Value 32010764288, 32005423104... disk free space in bytes?
   # 3019? -> Value 1, or 5? something to do with charging?
   
