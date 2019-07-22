@@ -73,10 +73,10 @@ class Novatek:
     return int(x.find('./Value').text)
   
   def start_record(self):
-    return self._get(2001, [('str', '1')])
+    return self._get(2001, [('par', '1')])
     
   def stop_record(self):
-    return self._get(2001, [('str', '0')])
+    return self._get(2001, [('par', '0')])
   
   def set_video_resolution(self, mode):
     return self._get(2002, [('par', str(mode))])
@@ -100,12 +100,15 @@ class Novatek:
     flag = '1' if stamp else '0'
     return self._get(2008, [('par', flag)])
   
-  # 2009: MAX_RECODE_TIME?
-  
+  # FIXME: this is not ping.
   def ping(self):
-    # What does this do? Check battery?
     return self._get(2016)
-      
+
+  # Get movie recording time. The unit is second.
+  def get_recording_sec(self):
+    x = self._get_xml(2016)
+    return int(x.find('./Value').text)
+
   def set_mode(self, mode):
     return self._get(3001, [('par', str(mode))])
   
