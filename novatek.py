@@ -109,14 +109,34 @@ class Novatek:
     x = self._get_xml(2016)
     return int(x.find('./Value').text)
 
+  # Change system mode.
+  # Command: http://192.168.1.254/?custom=1&cmd=3001&par=2
+  # Parameter: Depend on project Wi-Fi mode enumeration; current value as below
+  # WIFI_APP_MODE_PHOTO = 0,
+  # WIFI_APP_MODE_MOVIE,
+  # WIFI_APP_MODE_PLAYBACK,
   def set_mode(self, mode):
     return self._get(3001, [('par', str(mode))])
   
+  # Set Wi-Fi SSID. This command would become effective while reconnect Wi-Fi. 
+  # After set SSID, user would reconnect Wi-Fi by WIFIAPP_CMD_RECONNECT_WIFI. 
+  # The SSID would be kept in flash if NT9666x power off correctly.
+  # Command: http://192.168.1.254/ ?custom=1&cmd=3003&str=ABCDE
+  # Parameter: string of SSID name; max length is 32 bytes of number and characters mix
+  # The SSID can not contains space.
   def set_wifi_ssid(self, ssid):
-    return self._get(3003, [('str', ssid)])
-  
+    if len(ssid) > 32:
+          raise Exception("ssid max length is 32 bytes of number and characters mix")
+    return int(self._get_xml(3003, [('str', ssid)]).find('./Status').text)
+
+  # Set Wi-Fi passphrase. This command would become effective while reconnect Wi-Fi. 
+  # After set passphrase, user would reconnect Wi-Fi by WIFIAPP_CMD_RECONNECT_WIFI. 
+  # The passphrase would be kept in flash if NT9666x power off correctly.
+  # Parameter: string of passphrase ;max length is 26 bytes of number and characters mix
   def set_wifi_password(self, password):
-    return self._get(3004, [('str', password)])
+    if len(password) > 26:
+      raise Exception("passphrase max length is 26 bytes of number and characters mix")
+    return int(self._get_xml(3004, [('str', password)]).find('./Status').text)
   
   def set_date(self, date):
     return int(self._get_xml(3005, [('str', date.strftime("%Y-%m-%d"))]).find('./Status').text)
