@@ -119,10 +119,10 @@ class Novatek:
     return self._get(3004, [('str', password)])
   
   def set_date(self, date):
-    return self._get(3005, [('str', date.strftime("%Y-%m-%d"))])
+    return int(self._get_xml(3005, [('str', date.strftime("%Y-%m-%d"))]).find('./Status').text)
   
   def set_time(self, time):
-    return self._get(3006, [('str', time.strftime("%H:%M:%S"))])
+    return int(self._get_xml(3006, [('str', time.strftime("%H:%M:%S"))]).find('./Status').text)
   
   def format_sd(self):
     return self._get(3010, [('str', '1')])
